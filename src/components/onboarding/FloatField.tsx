@@ -1,21 +1,20 @@
-import { useId, useState, InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { useId, useState } from "react";
 
-interface BaseProps {
+interface Props {
   label: string;
   error?: string;
   icon?: React.ReactNode;
+  as?: "input" | "textarea";
+  value?: string;
+  onChange?: (e: any) => void;
+  type?: string;
+  className?: string;
 }
 
-type InputProps = BaseProps & InputHTMLAttributes<HTMLInputElement> & { as?: "input" };
-type TextareaProps = BaseProps & TextareaHTMLAttributes<HTMLTextAreaElement> & { as: "textarea" };
-
-export function FloatField(props: InputProps | TextareaProps) {
+export function FloatField({ label, error, icon, as = "input", value = "", onChange, type, className = "" }: Props) {
   const id = useId();
   const [focused, setFocused] = useState(false);
-  const { label, error, icon, className = "", ...rest } = props as InputProps & { as?: "input" | "textarea" };
-  const as = (props as TextareaProps).as === "textarea" ? "textarea" : "input";
-  const value = (rest.value ?? "") as string;
-  const floating = focused || value.length > 0;
+  const floating = focused || (value && value.length > 0);
 
   const fieldCls = `peer w-full bg-transparent text-foreground outline-none text-[15px] ${icon ? "pl-10" : "pl-4"} pr-4 pt-6 pb-2 ${as === "textarea" ? "min-h-[110px] resize-none" : ""} ${className}`;
 
@@ -28,17 +27,20 @@ export function FloatField(props: InputProps | TextareaProps) {
         {as === "textarea" ? (
           <textarea
             id={id}
-            {...(rest as TextareaHTMLAttributes<HTMLTextAreaElement>)}
-            onFocus={(e) => { setFocused(true); (rest as TextareaProps).onFocus?.(e); }}
-            onBlur={(e) => { setFocused(false); (rest as TextareaProps).onBlur?.(e); }}
+            value={value}
+            onChange={onChange}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             className={fieldCls}
           />
         ) : (
           <input
             id={id}
-            {...(rest as InputHTMLAttributes<HTMLInputElement>)}
-            onFocus={(e) => { setFocused(true); (rest as InputProps).onFocus?.(e); }}
-            onBlur={(e) => { setFocused(false); (rest as InputProps).onBlur?.(e); }}
+            type={type}
+            value={value}
+            onChange={onChange}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             className={fieldCls}
           />
         )}
