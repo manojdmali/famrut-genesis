@@ -12,7 +12,8 @@ type TextareaProps = BaseProps & TextareaHTMLAttributes<HTMLTextAreaElement> & {
 export function FloatField(props: InputProps | TextareaProps) {
   const id = useId();
   const [focused, setFocused] = useState(false);
-  const { label, error, icon, as = "input", className = "", ...rest } = props as InputProps;
+  const { label, error, icon, className = "", ...rest } = props as InputProps & { as?: "input" | "textarea" };
+  const as = (props as TextareaProps).as === "textarea" ? "textarea" : "input";
   const value = (rest.value ?? "") as string;
   const floating = focused || value.length > 0;
 
